@@ -1,26 +1,103 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import './Carousel.scss';
+import { State } from '../types/State';
 
-const Carousel: React.FC = () => (
-  <div className="Carousel">
-    <ul className="Carousel__list">
-      <li>
-        <img src="./img/1.png" alt="1" />
-      </li>
-      <li>
-        <img src="./img/1.png" alt="2" />
-      </li>
-      <li>
-        <img src="./img/1.png" alt="3" />
-      </li>
-      <li>
-        <img src="./img/1.png" alt="4" />
-      </li>
-    </ul>
+type Props = {
+  state: State;
+};
 
-    <button type="button">Prev</button>
-    <button type="button">Next</button>
-  </div>
-);
+const Carousel: React.FC<Props> = ({ state }) => {
+  const [position, setPosition] = useState(0);
+
+  const { images, itemWidth, frameSize, step, animationDuration, infinity } =
+    state;
+
+  const wrapperStyle = {
+    width: `${frameSize * itemWidth}px`,
+  };
+
+  const itemStyle = {
+    width: `${itemWidth}px`,
+  };
+  const listWidth = itemWidth * images.length;
+  const listStyle = {
+    width: `${listWidth}px`,
+    transform: `translateX(${position}px)`,
+    transition: `transform ${animationDuration}ms`,
+  };
+
+  const control = itemWidth * frameSize;
+
+  type OnClick = 'previous' | 'next';
+
+  const handleOnClick = (direction: OnClick) => {
+    if (direction === 'previous') {
+      setPosition(position - step * itemWidth);
+    } else {
+      setPosition(position + step * itemWidth);
+    }
+  };
+
+  useEffect(() => {
+    if (!infinity) {
+      return;
+    }
+
+    const interval = setInterval(() => {
+      setPosition(prev => {
+        const nextPosition = prev - step * itemWidth;
+
+        if (Math.abs(nextPosition) >= listWidth) {
+          return 0;
+        }
+
+        return nextPosition;
+      });
+    }, animationDuration + 500);
+
+    return () => clearInterval(interval);
+  }, [infinity, animationDuration, itemWidth, listWidth, step]);
+
+  return (
+    <div className="Carousel">
+      <button
+        onClick={() => handleOnClick('previous')}
+        type="button"
+        className={
+          listWidth + position === control ||
+          listWidth - Math.abs(position) === itemWidth
+            ? 'disabled'
+            : ''
+        }
+        disabled={
+          listWidth - Math.abs(position) === control ||
+          listWidth - Math.abs(position) === itemWidth
+        }
+      >
+        ←
+      </button>
+
+      <div className="Carousel__wrapper" style={wrapperStyle}>
+        <ul className="Carousel__list" style={listStyle}>
+          {images.map((image: string, index: number) => (
+            <li className="Carousel__item" key={image} style={itemStyle}>
+              <img src={image} alt={`${index}`} />
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <button
+        onClick={() => handleOnClick('next')}
+        type="button"
+        className={position === 0 ? 'disabled' : ''}
+        disabled={position === 0}
+        data-cy='next'
+      >
+        →
+      </button>
+    </div>
+  );
+};
 
 export default Carousel;
