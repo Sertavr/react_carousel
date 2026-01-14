@@ -40,9 +40,41 @@ const Carousel: React.FC<Props> = ({
 
   const handleOnClick = (direction: OnClick) => {
     if (direction === 'next') {
-      setPosition(position - step * itemWidth);
+      const nextPos = position - step * itemWidth;
+
+      if (infinity) {
+        if (Math.abs(nextPos) >= listWidth) {
+          setPosition(0);
+        } else {
+          setPosition(nextPos);
+        }
+      } else {
+        const maxShift = listWidth - frameSize * itemWidth;
+
+        if (Math.abs(nextPos) > maxShift) {
+          return;
+        }
+
+        setPosition(nextPos);
+      }
     } else {
-      setPosition(position + step * itemWidth);
+      const prevPos = position + step * itemWidth;
+
+      if (infinity) {
+        if (prevPos > 0) {
+          const maxShift = listWidth - frameSize * itemWidth;
+
+          setPosition(-maxShift);
+        } else {
+          setPosition(prevPos);
+        }
+      } else {
+        if (prevPos > 0) {
+          return;
+        }
+
+        setPosition(prevPos);
+      }
     }
   };
 
