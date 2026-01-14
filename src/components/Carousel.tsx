@@ -3,20 +3,20 @@ import './Carousel.scss';
 
 type Props = {
   images: string[];
-  itemWidth: number;
-  frameSize: number;
-  step: number;
-  animationDuration: number;
-  infinity: boolean;
+  itemWidth?: number;
+  frameSize?: number;
+  step?: number;
+  animationDuration?: number;
+  infinity?: boolean;
 };
 
 const Carousel: React.FC<Props> = ({
   images,
-  itemWidth,
-  frameSize,
-  step,
-  animationDuration,
-  infinity,
+  itemWidth = 130,
+  frameSize = 3,
+  step = 3,
+  animationDuration = 1000,
+  infinity = false,
 }) => {
   const [position, setPosition] = useState(0);
 
@@ -71,8 +71,8 @@ const Carousel: React.FC<Props> = ({
       <button
         onClick={() => handleOnClick('previous')}
         type="button"
-        className={position === 0 ? 'disabled' : ''}
-        disabled={position === 0}
+        className={position === 0 && !infinity ? 'disabled' : ''}
+        disabled={position === 0 && !infinity}
       >
         ←
       </button>
@@ -91,14 +91,16 @@ const Carousel: React.FC<Props> = ({
         onClick={() => handleOnClick('next')}
         type="button"
         className={
-          listWidth + position === control ||
-          listWidth - Math.abs(position) === itemWidth
+          (listWidth + position === control ||
+            listWidth - Math.abs(position) === itemWidth) &&
+          !infinity
             ? 'disabled'
             : ''
         }
         disabled={
-          listWidth - Math.abs(position) === control ||
-          listWidth - Math.abs(position) === itemWidth
+          (listWidth - Math.abs(position) === control ||
+            listWidth - Math.abs(position) === itemWidth) &&
+          !infinity
         }
         data-cy="next"
       >
