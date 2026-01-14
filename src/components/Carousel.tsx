@@ -1,16 +1,24 @@
 import React, { useEffect, useState } from 'react';
 import './Carousel.scss';
-import { State } from '../types/State';
 
 type Props = {
-  state: State;
+  images: string[];
+  itemWidth: number;
+  frameSize: number;
+  step: number;
+  animationDuration: number;
+  infinity: boolean;
 };
 
-const Carousel: React.FC<Props> = ({ state }) => {
+const Carousel: React.FC<Props> = ({
+  images,
+  itemWidth,
+  frameSize,
+  step,
+  animationDuration,
+  infinity,
+}) => {
   const [position, setPosition] = useState(0);
-
-  const { images, itemWidth, frameSize, step, animationDuration, infinity } =
-    state;
 
   const wrapperStyle = {
     width: `${frameSize * itemWidth}px`,
@@ -31,7 +39,7 @@ const Carousel: React.FC<Props> = ({ state }) => {
   type OnClick = 'previous' | 'next';
 
   const handleOnClick = (direction: OnClick) => {
-    if (direction === 'previous') {
+    if (direction === 'next') {
       setPosition(position - step * itemWidth);
     } else {
       setPosition(position + step * itemWidth);
@@ -63,6 +71,25 @@ const Carousel: React.FC<Props> = ({ state }) => {
       <button
         onClick={() => handleOnClick('previous')}
         type="button"
+        className={position === 0 ? 'disabled' : ''}
+        disabled={position === 0}
+      >
+        ←
+      </button>
+
+      <div className="Carousel__wrapper" style={wrapperStyle}>
+        <ul className="Carousel__list" style={listStyle}>
+          {images.map((image: string, index: number) => (
+            <li className="Carousel__item" key={image} style={itemStyle}>
+              <img src={image} width={`${itemWidth}`} alt={`${index}`} />
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <button
+        onClick={() => handleOnClick('next')}
+        type="button"
         className={
           listWidth + position === control ||
           listWidth - Math.abs(position) === itemWidth
@@ -73,26 +100,7 @@ const Carousel: React.FC<Props> = ({ state }) => {
           listWidth - Math.abs(position) === control ||
           listWidth - Math.abs(position) === itemWidth
         }
-      >
-        ←
-      </button>
-
-      <div className="Carousel__wrapper" style={wrapperStyle}>
-        <ul className="Carousel__list" style={listStyle}>
-          {images.map((image: string, index: number) => (
-            <li className="Carousel__item" key={image} style={itemStyle}>
-              <img src={image} alt={`${index}`} />
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      <button
-        onClick={() => handleOnClick('next')}
-        type="button"
-        className={position === 0 ? 'disabled' : ''}
-        disabled={position === 0}
-        data-cy='next'
+        data-cy="next"
       >
         →
       </button>

@@ -20,9 +20,10 @@ export const Input: React.FC<Props> = ({
   checked,
 }) => {
   return (
-    <label>
+    <label htmlFor={`${name}Id`}>
       {labelValue}
       <input
+        id={`${name}Id`}
         type={type}
         min={0}
         name={name}

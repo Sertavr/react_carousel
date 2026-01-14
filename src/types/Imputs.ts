@@ -3,5 +3,5 @@ export enum Inputs {
   FrameSize = 'frameSize',
   Step = 'step',
   AnimationDuration = 'animationDuration',
-  Infinity = 'infiniteSet',
+  Infinity = 'infinity',
 }
